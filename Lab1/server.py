@@ -40,7 +40,7 @@ def handle_intent(intent, sock):
         print("Connecting client to {0}".format(room))
         CHATROOMS[room].add_client(sock)
     
-        sock.send("Connected to {\n".encode())
+        sock.send("Connected to {}\n".format(room).encode())
         print(CHATROOMS[room].connected_clients)               
     else:
         sock.send("You wanted to do something else\n".encode())
