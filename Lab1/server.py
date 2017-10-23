@@ -3,7 +3,7 @@ import select
 import socket
 import sys
 
-import chatroom
+from chatroom import ChatRoom
 
 
 host = '0.0.0.0'
@@ -12,6 +12,39 @@ port = 8989
 SOCKET_LIST = []
 socket_dict = {}
 
+CHATROOMS = {}
+
+def create_chatroom(name, server):
+    new_id = len(CHATROOMS)
+    new_room = ChatRoom(name=name, server_sock=server, id=new_id)
+    CHATROOMS[name] = new_room
+
+def determine_intent(message):
+    """
+    Determine which action the user intends to perform, and to which chatroom (if any).
+    """
+    decoded_msg = message.decode()
+    if "JOIN_CHATROOM" in decoded_msg:
+        room = decoded_msg.split(':')[1].strip(' ').strip('\n')
+        return {"action": "JOIN", "chatroom": room}
+    else:
+        return {"action": "OTHER", "chatroom": ""}
+
+def handle_intent(intent, sock):
+    """
+    Carry out intended client action
+    """
+    action, room = intent['action'], intent['chatroom']
+
+    if action == "JOIN":
+        print("Connecting client to {0}".format(room))
+        CHATROOMS[room].add_client(sock)
+    
+        sock.send("Connected to {\n".encode())
+        print(CHATROOMS[room].connected_clients)               
+    else:
+        sock.send("You wanted to do something else\n".encode())
+
 def main():
     try:
         server = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -19,9 +52,11 @@ def main():
         server.setblocking(0)
         server.bind((host, port))
         server.listen(10)
+        create_chatroom(name="General", server=server)
+        create_chatroom(name="Random", server=server)
         print("Chat server started on {0}".format(server.getsockname()))
-        random = chatroom.ChatRoom(name="random", server_sock=server, id=69)
-        two = chatroom.ChatRoom(name="two", server_sock=server, id=2)
+        print("Available chatrooms: {0}".format(CHATROOMS))
+        
     except Exception as e:
         if server:
             server.close()
@@ -44,29 +79,16 @@ def main():
                 clientsock.setblocking(0)
                 SOCKET_LIST.append(clientsock)
                 socket_dict[clientsock] = "{0}".format(clientsock.getpeername())
-                # random.add_client(clientsock)
                 message = "[{0}:{1}] connected...".format(clientsock.getpeername()[0], clientsock.getpeername()[1])
                 print(message)
-                # broadcast(server, clientsock, message)
             # A client has sent some data
             else:
                 data = sock.recv(4096)
                 if data:
                     client_host, client_port = sock.getpeername()
-                    if data.decode() == "JOIN random\n":
-                        print("Connecting client to random")
-                        random.add_client(sock)
-                        sock.send("Connected to random".encode())
-                    elif data.decode() == "JOIN two\n":
-                        print("Connecting client to two")
-                        two.add_client(sock)
-                        sock.send("Connected to two".encode())
-                    else:
-                        sock.send("Couldn't connect you for some reason".encode())
-                    # message = "[{0}:{1}] -> {2}".format(client_host, client_port, data.decode())
-                    # print(message)
-                    # print(data.decode() == "HELO\n")
-                    # broadcast(server, sock, message)
+                    intent = determine_intent(data)
+                    handle_intent(intent, sock)
+                    
                 # Empty data = disconnected
                 else:
                     print("[{0}:{1}] Disconnected...".format(sock.getpeername()[0], sock.getpeername()[1]))

@@ -8,10 +8,16 @@ class ChatRoom(object):
         self.id = id
         self.connected_clients = [server_sock]
 
-    def add_client(self, client_sock):
+    def __repr__(self):
+        return "{0} ({1} online)".format(self.name, len(self.connected_clients))
+
+    def add_client(self, client_sock, broadcast_addition=True):
         try:
             self.connected_clients.append(client_sock)
-            self.broadcast(client_sock, "{0} has joined {1}".format(client_sock.getpeername(), self.name))
+            if broadcast_addition:
+                self.broadcast(client_sock, 
+                                "{0} has joined {1}".format(client_sock.getpeername(), 
+                                self.name))
             return True
         except Exception as e:
             print(e)
