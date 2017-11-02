@@ -28,30 +28,36 @@ def create_chatroom(name, server):
 
 def determine_intent(message):
     """
-    Determine which action the user intends to perform, and to which chatroom (if any).
+    Determine which action the user intends to perform.
     """
     decoded_msg = message.decode()
     if "HELO" in decoded_msg:
-        return {"action": "HELO", "chatroom": ""}
-    elif "KILL" in decoded_msg:
-        return {"action": "KILL", "chatroom": ""}
+        return "HELO"
+    elif "KILL_SERVICE" in decoded_msg:
+        return "KILL"
     elif "JOIN_CHATROOM" in decoded_msg:
-        room = decoded_msg.split(':')[1].strip(' ').strip('\n')
-        return {"action": "JOIN", "chatroom": room}
+        return "JOIN"
     else:
-        return {"action": "OTHER", "chatroom": ""}
+        return "OTHER"
 
-def handle_intent(intent, sock):
+def handle_intent(data, sock):
     """
     Carry out intended client action
     """
-    action, room = intent['action'], intent['chatroom']
+    action = determine_intent(data)
+    message = data.decode()
 
     if action == "KILL":
         raise TerminateServerException("Kill request received")
     elif action == "HELO":
-        sock.send("HELO\n".encode())
+        original_msg = message.split("HELO ")[1].strip('\n')
+        ip, port = sock.getpeername()
+        response = "HELO {0}\nIP:{1}\nPort:{2}\nStudentID:{3}\n".format(
+            original_msg, ip, port, student_id
+        )
+        return response
     elif action == "JOIN":
+        room = message.split(':')[1].strip(' ').strip('\n')
         print("Connecting client to {0}".format(room))
         CHATROOMS[room].add_client(sock)
     
@@ -100,8 +106,16 @@ def main():
                 data = sock.recv(4096)
                 if data:
                     client_host, client_port = sock.getpeername()
-                    intent = determine_intent(data)
-                    handle_intent(intent, sock)
+                    print("------------")
+                    print("<<<<<<<<<<<<")
+                    print(data.decode())
+
+                    response = handle_intent(data, sock)
+                    sock.send(response.encode())
+
+                    print(">>>>>>>>>>>>")
+                    print(response)
+                    print("------------")
                     
                 # Empty data = disconnected
                 else:
