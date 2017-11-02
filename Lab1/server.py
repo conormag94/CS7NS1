@@ -8,11 +8,18 @@ from chatroom import ChatRoom
 
 host = '0.0.0.0'
 port = 8989
+student_id = "13323317"
 
 SOCKET_LIST = []
 socket_dict = {}
 
 CHATROOMS = {}
+
+class TerminateServerException(Exception):
+    """
+    Raised when a client requests the server to shutdown.
+    """
+    pass
 
 def create_chatroom(name, server):
     new_id = len(CHATROOMS)
@@ -24,7 +31,11 @@ def determine_intent(message):
     Determine which action the user intends to perform, and to which chatroom (if any).
     """
     decoded_msg = message.decode()
-    if "JOIN_CHATROOM" in decoded_msg:
+    if "HELO" in decoded_msg:
+        return {"action": "HELO", "chatroom": ""}
+    elif "KILL" in decoded_msg:
+        return {"action": "KILL", "chatroom": ""}
+    elif "JOIN_CHATROOM" in decoded_msg:
         room = decoded_msg.split(':')[1].strip(' ').strip('\n')
         return {"action": "JOIN", "chatroom": room}
     else:
@@ -36,7 +47,11 @@ def handle_intent(intent, sock):
     """
     action, room = intent['action'], intent['chatroom']
 
-    if action == "JOIN":
+    if action == "KILL":
+        raise TerminateServerException("Kill request received")
+    elif action == "HELO":
+        sock.send("HELO\n".encode())
+    elif action == "JOIN":
         print("Connecting client to {0}".format(room))
         CHATROOMS[room].add_client(sock)
     
@@ -55,8 +70,7 @@ def main():
         create_chatroom(name="General", server=server)
         create_chatroom(name="Random", server=server)
         print("Chat server started on {0}".format(server.getsockname()))
-        print("Available chatrooms: {0}".format(CHATROOMS))
-        
+        print("Available chatrooms: {0}".format(CHATROOMS))     
     except Exception as e:
         if server:
             server.close()
