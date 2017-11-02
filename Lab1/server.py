@@ -57,16 +57,17 @@ def handle_intent(data, sock):
         response = "HELO {0}\nIP:{1}\nPort:{2}\nStudentID:{3}\n".format(
             original_msg, HARDCODED_IP, port, student_id
         )
-        return response
+        sock.sendall(response.encode())
     elif action == "JOIN":
         lines = message.split('\n')
         room = lines[0].split(": ")[1].strip('\n')
         nickname = lines[3].split(": ")[1].strip('\n')
 
-        print("Connecting client to {0}".format(room))
+        print("Connecting {0} to {1}".format(nickname, room))
+        
         new_client = CHATROOMS[room].add_client(client_sock=sock, client_nickname=nickname)
-
         chatroom = CHATROOMS[room]
+
         response = "JOINED_CHATROOM: {0}\nSERVER_IP: {1}\nPORT: {2}\nROOM_REF: {3}\nJOIN_ID: {4}\n".format(
             chatroom.name,
             HARDCODED_IP,
@@ -74,11 +75,16 @@ def handle_intent(data, sock):
             chatroom.id,
             new_client["join_id"]
         )
-        #chatroom.broadcast(response)
-        return response              
+        sock.sendall(response.encode())   
+
+        broadcast_msg = "CHAT: {0}\nCLIENT_NAME: {1}\nMESSAGE: {1} has joined this chatroom\n\n".format(
+            chatroom.id,
+            new_client["nickname"],
+        )
+        chatroom.broadcast(sender=new_client["sock"], message=broadcast_msg)           
     else:
         print("Intent Unknown")
-        return None
+        sock.sendall("ERRRROROROR")
 
 def main():
     try:
@@ -105,8 +111,6 @@ def main():
         
         for sock in readable:
 
-            # if socket_dict.get(sock):
-            #     print(socket_dict[sock])
             # A new client has connected
             if sock is server:
                 clientsock, sock_addr = sock.accept()
@@ -125,14 +129,7 @@ def main():
                     print(data.decode())
 
                     print(">>>>>>>>>>>>")
-
-                    response = handle_intent(data, sock)
-                    if response is not None:
-                        print(response)
-                        sock.sendall(response.encode())
-                    else:
-                        print("ERROR_CODE")
-                        sock.sendall("ERROR_CODE".encode())
+                    handle_intent(data, sock)
 
                     print("------------\n")
                     
