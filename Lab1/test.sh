@@ -1,1 +1,1 @@
-git pull && ./compile.sh && ./run.sh
+git pull && ./compile.sh && ./start.sh
