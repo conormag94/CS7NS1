@@ -76,7 +76,8 @@ def handle_intent(data, sock):
         )
         return response              
     else:
-        sock.send("You wanted to do something else\n".encode())
+        print("Intent Unknown")
+        return None
 
 def main():
     try:
@@ -103,8 +104,8 @@ def main():
         
         for sock in readable:
 
-            if socket_dict.get(sock):
-                print(socket_dict[sock])
+            # if socket_dict.get(sock):
+            #     print(socket_dict[sock])
             # A new client has connected
             if sock is server:
                 clientsock, sock_addr = sock.accept()
@@ -123,7 +124,10 @@ def main():
                     print(data.decode())
 
                     response = handle_intent(data, sock)
-                    sock.send(response.encode())
+                    if response is not None:
+                        sock.send(response.encode())
+                    else:
+                        sock.send(data.encode())
 
                     print(">>>>>>>>>>>>")
                     print(response)
