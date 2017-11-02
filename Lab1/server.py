@@ -78,6 +78,7 @@ def handle_intent(data, sock):
                                             client_name=new_client["nickname"], 
                                             message=chat_msg)
 
+        print(join_notification)
         chatroom.broadcast(sender=new_client["sock"], message=join_notification)           
     else:
         print("Intent Unknown")
