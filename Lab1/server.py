@@ -123,15 +123,17 @@ def main():
                     print("<<<<<<<<<<<<")
                     print(data.decode())
 
+                    print(">>>>>>>>>>>>")
+
                     response = handle_intent(data, sock)
                     if response is not None:
+                        print(response)
                         sock.send(response.encode())
                     else:
-                        sock.send(data)
+                        print("ERROR_CODE")
+                        sock.send("ERROR_CODE".encode())
 
-                    print(">>>>>>>>>>>>")
-                    print(response)
-                    print("------------")
+                    print("------------\n")
                     
                 # Empty data = disconnected
                 else:
