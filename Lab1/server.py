@@ -54,18 +54,27 @@ def handle_intent(data, sock):
         raise TerminateServerException("Kill request received")
     elif action == "HELO":
         original_msg = message.split("HELO ")[1].strip('\n')
-        ip, port = sock.getpeername()
         response = "HELO {0}\nIP:{1}\nPort:{2}\nStudentID:{3}\n".format(
             original_msg, HARDCODED_IP, port, student_id
         )
         return response
     elif action == "JOIN":
-        room = message.split(':')[1].strip(' ').strip('\n')
+        lines = message.split('\n')
+        room = lines[0].split(": ")[1].strip('\n')
+        nickname = lines[3].split(": ")[1].strip('\n')
+
         print("Connecting client to {0}".format(room))
-        CHATROOMS[room].add_client(sock)
-    
-        sock.send("Connected to {}\n".format(room).encode())
-        print(CHATROOMS[room].connected_clients)               
+        new_client = CHATROOMS[room].add_client(client_sock=sock, client_nickname=nickname)
+
+        chatroom = CHATROOMS[room]
+        response = "JOINED_CHATROOM: {0}\nSERVER_IP: {1}\nPORT: {2}\nROOM_REF: {3}\nJOIN_ID: {4}\n".format(
+            chatroom.name,
+            HARDCODED_IP,
+            port,
+            chatroom.id,
+            new_client["join_id"]
+        )
+        return response              
     else:
         sock.send("You wanted to do something else\n".encode())
 
@@ -77,7 +86,7 @@ def main():
         server.bind((host, port))
         server.listen(10)
         create_chatroom(name="General", server=server)
-        create_chatroom(name="Random", server=server)
+        create_chatroom(name="room1", server=server)
         print("Chat server started on {0}".format(server.getsockname()))
         print("Available chatrooms: {0}".format(CHATROOMS))     
     except Exception as e:
