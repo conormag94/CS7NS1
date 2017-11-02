@@ -127,7 +127,7 @@ def main():
                     if response is not None:
                         sock.send(response.encode())
                     else:
-                        sock.send(data.encode())
+                        sock.send(data)
 
                     print(">>>>>>>>>>>>")
                     print(response)
