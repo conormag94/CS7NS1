@@ -84,7 +84,7 @@ def handle_intent(data, sock):
         chatroom.broadcast(sender=new_client["sock"], message=broadcast_msg)           
     else:
         print("Intent Unknown")
-        sock.sendall("ERRRROROROR")
+        sock.sendall("ERRRROROROR".encode())
 
 def main():
     try:
