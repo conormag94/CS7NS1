@@ -34,7 +34,7 @@ class ChatRoom(object):
 
     def broadcast(self, sender, message):
         for client in self.connected_clients:
-            if client["sock"] is not self.server_sock and client["sock"] is not sender:
+            if client["sock"] is not self.server_sock:
                 try:
                     client["sock"].sendall(message.encode())
                 except Exception as e:
