@@ -7,7 +7,7 @@ from chatroom import ChatRoom
 
 
 host = '0.0.0.0'
-port = 8989
+port = 8080
 student_id = "13323317"
 
 SOCKET_LIST = []
