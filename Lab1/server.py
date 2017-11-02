@@ -10,6 +10,9 @@ host = '0.0.0.0'
 port = 8080
 student_id = "13323317"
 
+# TODO: Change this to read the server sock ip
+HARDCODED_IP = "10.62.0.18"
+
 SOCKET_LIST = []
 socket_dict = {}
 
@@ -53,7 +56,7 @@ def handle_intent(data, sock):
         original_msg = message.split("HELO ")[1].strip('\n')
         ip, port = sock.getpeername()
         response = "HELO {0}\nIP:{1}\nPort:{2}\nStudentID:{3}\n".format(
-            original_msg, ip, port, student_id
+            original_msg, HARDCODED_IP, port, student_id
         )
         return response
     elif action == "JOIN":
