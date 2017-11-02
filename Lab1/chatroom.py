@@ -36,7 +36,7 @@ class ChatRoom(object):
         for client in self.connected_clients:
             if client["sock"] is not self.server_sock and client["sock"] is not sender:
                 try:
-                    client["sock"].send(message.encode())
+                    client["sock"].sendall(message.encode())
                 except Exception as e:
                     print("Err in {0}: {1}".format(self.name, e))
                     client["sock"].close()

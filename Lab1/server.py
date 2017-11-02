@@ -74,6 +74,7 @@ def handle_intent(data, sock):
             chatroom.id,
             new_client["join_id"]
         )
+        #chatroom.broadcast(response)
         return response              
     else:
         print("Intent Unknown")
@@ -128,10 +129,10 @@ def main():
                     response = handle_intent(data, sock)
                     if response is not None:
                         print(response)
-                        sock.send(response.encode())
+                        sock.sendall(response.encode())
                     else:
                         print("ERROR_CODE")
-                        sock.send("ERROR_CODE".encode())
+                        sock.sendall("ERROR_CODE".encode())
 
                     print("------------\n")
                     
@@ -151,7 +152,7 @@ def broadcast(server_sock, client_sock, message):
     for sock in SOCKET_LIST:
         if sock is not server_sock and sock is not client_sock:
             try:
-                sock.send(message.encode())
+                sock.sendall(message.encode())
             except Exception as e:
                 sock.close()
                 if sock in SOCKET_LIST:
