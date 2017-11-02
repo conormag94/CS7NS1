@@ -14,7 +14,7 @@ class ChatRoom(object):
     def __repr__(self):
         return "{0} ({1} online)".format(self.name, len(self.connected_clients))
 
-    def add_client(self, client_sock, client_nickname, broadcast_addition=True):
+    def add_client(self, client_sock, client_nickname, broadcast_addition=False):
         try:
             new_client = {
                 "nickname": client_nickname, 
