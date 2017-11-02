@@ -4,6 +4,7 @@ import socket
 import sys
 
 from chatroom import ChatRoom
+import responder
 
 
 host = '0.0.0.0'
@@ -68,20 +69,16 @@ def handle_intent(data, sock):
         new_client = CHATROOMS[room].add_client(client_sock=sock, client_nickname=nickname)
         chatroom = CHATROOMS[room]
 
-        response = "JOINED_CHATROOM: {0}\nSERVER_IP: {1}\nPORT: {2}\nROOM_REF: {3}\nJOIN_ID: {4}\n".format(
-            chatroom.name,
-            HARDCODED_IP,
-            port,
-            chatroom.id,
-            new_client["join_id"]
-        )
+        response = responder.join(chatroom=chatroom, ip=HARDCODED_IP, port=port, join_id=new_client["join_id"])
+        
         sock.sendall(response.encode())   
 
-        broadcast_msg = "CHAT: {0}\nCLIENT_NAME: {1}\nMESSAGE: {1} has joined this chatroom\n\n".format(
-            chatroom.id,
-            new_client["nickname"],
-        )
-        chatroom.broadcast(sender=new_client["sock"], message=broadcast_msg)           
+        chat_msg = "{0} has joined this chatroom".format(new_client["nickname"])
+        join_notification = responder.chat(chatroom=chatroom, 
+                                            client_name=new_client["nickname"], 
+                                            message=chat_msg)
+
+        chatroom.broadcast(sender=new_client["sock"], message=join_notification)           
     else:
         print("Intent Unknown")
         sock.sendall("ERRRROROROR".encode())
