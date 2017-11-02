@@ -6,30 +6,39 @@ class ChatRoom(object):
         self.name = name
         self.server_sock = server_sock
         self.id = id
-        self.connected_clients = [server_sock]
+        self.next_client_id = 1
+        self.connected_clients = [
+            {"nickname": "Server", "sock": server_sock, "join_id": 0}
+        ]
 
     def __repr__(self):
         return "{0} ({1} online)".format(self.name, len(self.connected_clients))
 
-    def add_client(self, client_sock, broadcast_addition=True):
+    def add_client(self, client_sock, client_nickname, broadcast_addition=True):
         try:
-            self.connected_clients.append(client_sock)
+            new_client = {
+                "nickname": client_nickname, 
+                "sock": client_sock,
+                "join_id": self.next_client_id
+                }
+            self.connected_clients.append(new_client)
+            self.next_client_id += 1
             if broadcast_addition:
                 self.broadcast(client_sock, 
                                 "{0} has joined {1}".format(client_sock.getpeername(), 
                                 self.name))
-            return True
+            return new_client
         except Exception as e:
             print(e)
-            return False
+            return None
 
     def broadcast(self, sender, message):
-        for sock in self.connected_clients:
-            if sock is not self.server_sock and sock is not sender:
+        for client in self.connected_clients:
+            if client["sock"] is not self.server_sock and client["sock"] is not sender:
                 try:
-                    sock.send(message.encode())
+                    client["sock"].send(message.encode())
                 except Exception as e:
                     print("Err in {0}: {1}".format(self.name, e))
-                    sock.close()
-                    if sock in connected_clients:
-                        connected_clients.remove(sock)
+                    client["sock"].close()
+                    if client in self.connected_clients:
+                        connected_clients.remove(client)
