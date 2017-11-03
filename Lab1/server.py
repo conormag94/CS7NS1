@@ -51,6 +51,8 @@ def determine_intent(message):
         return "JOIN"
     elif "LEAVE_CHATROOM" in decoded_msg:
         return "LEAVE"
+    elif "CHAT" in decoded_msg:
+        return "CHAT"
     else:
         return "OTHER"
 
@@ -121,6 +123,23 @@ def handle_intent(data, sock):
         print(broadcast_msg)
         sock.sendall(broadcast_msg.encode())
         room.broadcast(sender=room.server_sock, message=broadcast_msg)
+    elif action == "CHAT":
+        lines = message.split('\n')
+
+        room_ref = lines[0].split(": ")[1].strip('\n')
+        client_name = lines[2].split(": ")[1].strip('\n')
+        message = lines[3].split(": ").strip('\n')
+
+        chat_msg = "CHAT: {0}\nCLIENT_NAME: {1}\nMESSAGE: {2}".format(
+            room_ref,
+            client_name,
+            message
+        )
+
+        print(broadcast_msg)
+        room = get_room_by_id(int(room_ref))
+        room.broadcast_msg(sender=room.server_sock, message=chat_msg)
+
     else:
         print("ERROR_CODE: 22\nERROR_DESCRIPTION: ERROR\n")
         sock.sendall("ERROR_CODE: 22\nERROR_DESCRIPTION: ERROR\n".encode())
