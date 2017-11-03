@@ -213,6 +213,9 @@ def main():
                         print(e)
                         server.close()
                         print("Server terminated...")
+                        for sock in SOCKET_LIST:
+                            sock.close()
+                        print("All sockets closed...")
                         sys.exit(0)
 
                     print("------------\n")
