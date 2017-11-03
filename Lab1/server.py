@@ -132,8 +132,8 @@ def main():
         server.setblocking(0)
         server.bind((host, port))
         server.listen(10)
-        create_chatroom(name="General", server=server)
         create_chatroom(name="room1", server=server)
+        create_chatroom(name="room2", server=server)
         print("Chat server started on {0}".format(server.getsockname()))
         print("Available chatrooms: {0}".format(CHATROOMS))     
     except Exception as e:
