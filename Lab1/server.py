@@ -221,8 +221,7 @@ def main():
                 else:
                     print("[{0}:{1}] Disconnected...".format(sock.getpeername()[0], sock.getpeername()[1]))
                     if sock in SOCKET_LIST:
-                        SOCKET_LIST.remove(sock)
-                    broadcast(server, sock, "Client offline")   
+                        SOCKET_LIST.remove(sock)  
 
     server.close()
 
