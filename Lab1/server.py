@@ -38,6 +38,18 @@ def get_room_by_id(id):
             return room
     return None
 
+def disconnect_client(client_name):
+    for name, room in CHATROOMS.items():
+        for client in room.connected_clients:
+            if client["nickname"] == client_name:
+                room.remove_client(client_name)
+
+                disconnect_msg = "CHAT: {0}\nCLIENT_NAME: {1}\nMESSAGE: {1} has left this chatroom\n\n".format(
+                    room.id,
+                    client_name
+                )
+                room.broadcast(sender=room.server_sock, message=disconnect_msg)
+
 def determine_intent(message):
     """
     Determine which action the user intends to perform.
@@ -53,6 +65,8 @@ def determine_intent(message):
         return "LEAVE"
     elif "CHAT" in decoded_msg:
         return "CHAT"
+    elif "DISCONNECT" in decoded_msg:
+        return "DISCONNECT"
     else:
         return "OTHER"
 
@@ -139,7 +153,13 @@ def handle_intent(data, sock):
         print(chat_msg)
         room = get_room_by_id(int(room_ref))
         room.broadcast(sender=room.server_sock, message=chat_msg)
+    elif action == "DISCONNECT":
+        lines = message.split('\n')
+        client_name = lines[2].split(": ")[1].strip('\n')
 
+        disconnect_client()
+        SOCKET_LIST.remove(sock)
+        sock.close()
     else:
         print("ERROR_CODE: 22\nERROR_DESCRIPTION: ERROR\n")
         sock.sendall("ERROR_CODE: 22\nERROR_DESCRIPTION: ERROR\n".encode())
