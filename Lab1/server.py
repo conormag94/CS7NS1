@@ -98,7 +98,7 @@ def handle_intent(data, sock):
         room_ref = lines[0].split(": ")[1].strip('\n')
         client_name = lines[2].split(": ")[1].strip('\n')
 
-        room = get_room_by_id(room_ref)
+        room = get_room_by_id(int(room_ref))
         client_who_left = room.remove_client(client_name)
         
         leave_confirmation = "LEFT_CHATROOM: {0}\nJOIN_ID: {1}\n".format(
