@@ -157,7 +157,7 @@ def handle_intent(data, sock):
         lines = message.split('\n')
         client_name = lines[2].split(": ")[1].strip('\n')
 
-        disconnect_client()
+        disconnect_client(client_name)
         SOCKET_LIST.remove(sock)
         sock.close()
     else:
