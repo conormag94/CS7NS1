@@ -130,7 +130,7 @@ def handle_intent(data, sock):
         client_name = lines[2].split(": ")[1].strip('\n')
         message = lines[3].split(": ")[1].strip('\n')
 
-        chat_msg = "CHAT: {0}\nCLIENT_NAME: {1}\nMESSAGE: {2}".format(
+        chat_msg = "CHAT: {0}\nCLIENT_NAME: {1}\nMESSAGE: {2}\n\n".format(
             room_ref,
             client_name,
             message
