@@ -27,7 +27,7 @@ class ChatRoom(object):
 
     def add_client(self, client_sock, client_nickname, broadcast_addition=False):
         try:
-            existing_client = find_client_by_name(client_nickname)
+            existing_client = self.find_client_by_name(client_nickname)
             if existing_client is None:
                 new_client = {
                     "nickname": client_nickname, 
