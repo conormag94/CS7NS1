@@ -32,6 +32,17 @@ class ChatRoom(object):
             print(e)
             return None
 
+    def remove_client(self, client_nickname):
+        for client in self.connected_clients:
+            if client["nickname"] == nickname:
+                self.connected_clients.remove(client)
+                leave_message = "CHAT: {0}\nCLIENT_NAME: {1}\nMESSAGE: {1} has left this chatroom\n\n".format(
+                    self.id,
+                    client["nickname"],
+                )   
+                self.broadcast(self.server_sock, leave_message)
+                return client
+
     def broadcast(self, sender, message):
         for client in self.connected_clients:
             if client["sock"] is not self.server_sock:
