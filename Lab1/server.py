@@ -33,7 +33,7 @@ def get_room_by_id(id):
     """
     Return Chatroom object with specified id
     """
-    for room in CHATROOMS:
+    for name, room in CHATROOMS.items():
         if room.id == id:
             return room
     return None
