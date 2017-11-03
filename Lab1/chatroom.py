@@ -40,7 +40,7 @@ class ChatRoom(object):
                     self.id,
                     client["nickname"],
                 )   
-                self.broadcast(self.server_sock, leave_message)
+                #self.broadcast(self.server_sock, leave_message)
                 return client
 
     def broadcast(self, sender, message):

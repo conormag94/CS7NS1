@@ -86,12 +86,16 @@ def handle_intent(data, sock):
             chatroom.id,
             new_client["join_id"]
         )
+
+        print(response)
         sock.sendall(response.encode())   
 
         broadcast_msg = "CHAT: {0}\nCLIENT_NAME: {1}\nMESSAGE: {1} has joined this chatroom\n\n".format(
             chatroom.id,
             new_client["nickname"],
         )
+
+        print(broadcast_msg)
         chatroom.broadcast(sender=new_client["sock"], message=broadcast_msg)
     elif action == "LEAVE":
         lines = message.split('\n')
@@ -105,7 +109,17 @@ def handle_intent(data, sock):
             room.id,
             client_who_left["join_id"]
         )
+
+        print(leave_confirmation)
         sock.sendall(leave_confirmation.encode())
+
+        broadcast_msg = "CHAT: {0}\nCLIENT_NAME: {1}\nMESSAGE: {1} has left this chatroom\n\n".format(
+                    room.id,
+                    client_who_left["nickname"],
+        )
+
+        print(broadcast_msg)
+        room.broadcast(sender=room.server_sock, message=broadcast_msg)
     else:
         print("ERROR_CODE: 22\nERROR_DESCRIPTION: ERROR\n")
         sock.sendall("ERROR_CODE: 22\nERROR_DESCRIPTION: ERROR\n".encode())
