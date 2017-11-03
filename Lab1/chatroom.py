@@ -34,7 +34,7 @@ class ChatRoom(object):
 
     def remove_client(self, client_nickname):
         for client in self.connected_clients:
-            if client["nickname"] == nickname:
+            if client["nickname"] == client_nickname:
                 self.connected_clients.remove(client)
                 leave_message = "CHAT: {0}\nCLIENT_NAME: {1}\nMESSAGE: {1} has left this chatroom\n\n".format(
                     self.id,
