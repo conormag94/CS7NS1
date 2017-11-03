@@ -78,7 +78,7 @@ def handle_intent(data, sock):
     message = data.decode()
 
     if action == "KILL":
-        raise TerminateServerException("Kill request received")
+        sys.exit(1)
     elif action == "HELO":
         original_msg = message.split("HELO ")[1].strip('\n')
         response = "HELO {0}\nIP:{1}\nPort:{2}\nStudentID:{3}\n".format(
