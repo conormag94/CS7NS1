@@ -119,6 +119,7 @@ def handle_intent(data, sock):
         )
 
         print(broadcast_msg)
+        sock.sendall(broadcast_msg.encode())
         room.broadcast(sender=room.server_sock, message=broadcast_msg)
     else:
         print("ERROR_CODE: 22\nERROR_DESCRIPTION: ERROR\n")
