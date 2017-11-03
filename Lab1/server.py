@@ -78,13 +78,7 @@ def handle_intent(data, sock):
     message = data.decode()
 
     if action == "KILL":
-        for name, room in CHATROOMS.items():
-            for client in room.connected_clients:
-                try:
-                    client["sock"].close()
-                except Exception as e:
-                    print("****** Unable to close (maybe already closed")
-        sys.exit(1)
+        raise TerminateServerException("Shutdown request received")
     elif action == "HELO":
         original_msg = message.split("HELO ")[1].strip('\n')
         response = "HELO {0}\nIP:{1}\nPort:{2}\nStudentID:{3}\n".format(
@@ -213,7 +207,13 @@ def main():
                     print(data.decode())
 
                     print(">>>>>>>>>>>>")
-                    handle_intent(data, sock)
+                    try:
+                        handle_intent(data, sock)
+                    except TerminateServerException as e:
+                        print(e)
+                        server.close()
+                        print("Server terminated...")
+                        sys.exit(0)
 
                     print("------------\n")
                     
@@ -225,19 +225,6 @@ def main():
                     broadcast(server, sock, "Client offline")   
 
     server.close()
-
-def broadcast(server_sock, client_sock, message):
-    """
-    Broadcast to every connection except the server and the one sending the message
-    """
-    for sock in SOCKET_LIST:
-        if sock is not server_sock and sock is not client_sock:
-            try:
-                sock.sendall(message.encode())
-            except Exception as e:
-                sock.close()
-                if sock in SOCKET_LIST:
-                    SOCKET_LIST.remove(sock)
 
 if __name__ == '__main__':
     try:
