@@ -138,7 +138,7 @@ def handle_intent(data, sock):
 
         print(chat_msg)
         room = get_room_by_id(int(room_ref))
-        room.broadcast_msg(sender=room.server_sock, message=chat_msg)
+        room.broadcast(sender=room.server_sock, message=chat_msg)
 
     else:
         print("ERROR_CODE: 22\nERROR_DESCRIPTION: ERROR\n")
