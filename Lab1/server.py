@@ -78,8 +78,12 @@ def handle_intent(data, sock):
     message = data.decode()
 
     if action == "KILL":
-        for sock in SOCKET_LIST:
-            sock.close()
+        for name, room in CHATROOMS:
+            for client in room.connected_clients:
+                try:
+                    client["sock"].close()
+                except Exception as e:
+                    print("****** Unable to close (maybe already closed")
         sys.exit(1)
     elif action == "HELO":
         original_msg = message.split("HELO ")[1].strip('\n')
