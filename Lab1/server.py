@@ -29,6 +29,15 @@ def create_chatroom(name, server):
     new_room = ChatRoom(name=name, server_sock=server, id=new_id)
     CHATROOMS[name] = new_room
 
+def get_room_by_id(id):
+    """
+    Return Chatroom object with specified id
+    """
+    for room in CHATROOMS:
+        if room.id == id:
+            return room
+    return None
+
 def determine_intent(message):
     """
     Determine which action the user intends to perform.
@@ -40,6 +49,8 @@ def determine_intent(message):
         return "KILL"
     elif "JOIN_CHATROOM" in decoded_msg:
         return "JOIN"
+    elif "LEAVE_CHATROOM" in decoded_msg:
+        return "LEAVE"
     else:
         return "OTHER"
 
@@ -81,10 +92,23 @@ def handle_intent(data, sock):
             chatroom.id,
             new_client["nickname"],
         )
-        chatroom.broadcast(sender=new_client["sock"], message=broadcast_msg)           
+        chatroom.broadcast(sender=new_client["sock"], message=broadcast_msg)
+    elif action == "LEAVE":
+        lines = message.split('\n')
+        room_ref = lines[0].split(": ")[1].strip('\n')
+        client_name = lines[2].split(": ")[1].strip('\n')
+
+        room = get_room_by_id(room_ref)
+        client_who_left = room.remove_client(client_name)
+        
+        leave_confirmation = "LEFT_CHATROOM: {0}\nJOIN_ID: {1}\n".format(
+            room.id,
+            client_who_left["join_id"]
+        )
+        sock.sendall(leave_confirmation.encode())
     else:
-        print("Intent Unknown")
-        sock.sendall("ERRRROROROR".encode())
+        print("ERROR_CODE: 22\nERROR_DESCRIPTION: ERROR\n")
+        sock.sendall("ERROR_CODE: 22\nERROR_DESCRIPTION: ERROR\n".encode())
 
 def main():
     try:
