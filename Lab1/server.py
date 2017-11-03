@@ -42,13 +42,13 @@ def disconnect_client(client_name):
     for name, room in CHATROOMS.items():
         for client in room.connected_clients:
             if client["nickname"] == client_name:
-                room.remove_client(client_name)
 
                 disconnect_msg = "CHAT: {0}\nCLIENT_NAME: {1}\nMESSAGE: {1} has left this chatroom\n\n".format(
                     room.id,
                     client_name
                 )
                 room.broadcast(sender=room.server_sock, message=disconnect_msg)
+                room.remove_client(client_name)
 
 def determine_intent(message):
     """
