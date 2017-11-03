@@ -78,7 +78,7 @@ def handle_intent(data, sock):
     message = data.decode()
 
     if action == "KILL":
-        for name, room in CHATROOMS:
+        for name, room in CHATROOMS.items():
             for client in room.connected_clients:
                 try:
                     client["sock"].close()
