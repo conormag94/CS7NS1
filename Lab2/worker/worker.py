@@ -1,3 +1,6 @@
+import random
+import time
+
 import requests
 from pygit2 import Repository, clone_repository, GitError
 
@@ -70,6 +73,9 @@ def main():
             cc = calculate_average_cc(filetext)
             # print(f'{file.name}\t{cc}')
         print(f'{commit_hash}: Complexity calculated for {len(files_to_analyze)} file(s)')
+
+        sleepy_time = random.randint(1, 5)
+        time.sleep(sleepy_time)
         commit_hash = ask_for_work()
 
 if __name__ == '__main__':
