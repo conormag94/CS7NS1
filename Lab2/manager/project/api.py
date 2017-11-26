@@ -8,8 +8,8 @@ REPO_DIR = './repo'
 REPO_PATH = REPO_DIR + '/.git'
 REPO_URL = 'https://github.com/google/tangent.git'
 
-q = [0, 2, 4, 5]
-cnt = 0
+commits_list = []
+next_task = 0
 
 manager_blueprint = Blueprint('manager', __name__)
 
@@ -23,9 +23,17 @@ def check_repo():
         repo = clone_repository(REPO_URL, REPO_DIR)
     print("Finished!")
 
+def get_commits():
+    global commits_list
+
+    repo = Repository(REPO_PATH)
+    for commit in repo.walk(repo.head.target):
+        commits_list.append(commit.id)
+
 @manager_blueprint.before_app_first_request
 def init():
     check_repo()
+    get_commits()
 
 @manager_blueprint.route('/', methods=['GET'])
 def hello_world():
@@ -33,7 +41,18 @@ def hello_world():
     for chunk in chunks:
     	print(chunk.message)
     
-    global cnt
-    result = q[cnt % 4]
-    cnt += 1
+    global commits_list
+    global next_task
+
+    result = commits_list[next_task % len(commits_list)]
+    next_task += 1
     return str(result)
+
+@manager_blueprint.route('/work', methods=['GET'])
+def get_work():
+    global commits_list
+    global next_task
+
+    commit_hash = str(commits_list[next_task])
+    next_task += 1
+    return jsonify({'commit': commit_hash}), 200
