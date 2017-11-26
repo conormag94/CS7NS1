@@ -59,3 +59,14 @@ def get_work():
         return jsonify({'commit': commit_hash}), 200
     except IndexError:
         return jsonify({"commit": None}), 404
+
+@manager_blueprint.route('/work', methods=['POST'])
+def work_result():
+    result = request.get_json()
+
+    commit = result.get("commit")
+    complexity = result.get("complexity")
+
+    print(f'{commit}: {complexity}')
+    response = {"message": "sound m8"}
+    return jsonify(response), 200
