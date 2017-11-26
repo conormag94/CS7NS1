@@ -52,7 +52,10 @@ def calculate_average_cc(filetext):
 def main():
     repo = get_repo_obj()
 
-    commit_hash = '418ae74aa28d35cb395d98bb3377609f11428af4'
+    work = requests.get('http://127.0.0.1:5000/work').json()
+
+    # commit_hash = '418ae74aa28d35cb395d98bb3377609f11428af4'
+    commit_hash = work["commit"]
     commit = repo.get(commit_hash)
 
     files_to_analyze = find_py_files(repo, commit.tree)
@@ -60,7 +63,7 @@ def main():
         filetext = repo[file.id].data.decode()
         cc = calculate_average_cc(filetext)
         print(f'{file.name}\t{cc}')
-    print(f'Complexity calculated for {len(files_to_analyze)} file(s)')
+    print(f'{commit_hash}: Complexity calculated for {len(files_to_analyze)} file(s)')
 
 if __name__ == '__main__':
     main()
