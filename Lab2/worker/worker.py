@@ -8,7 +8,7 @@ from radon.complexity import cc_visit
 
 REPO_DIR = './repo'
 REPO_PATH = REPO_DIR + '/.git'
-REPO_URL = 'https://github.com/google/tangent.git'
+REPO_URL = 'https://github.com/rubik/radon.git'
 
 
 def get_repo_obj():
@@ -65,17 +65,24 @@ def main():
     commit_hash = ask_for_work()
 
     while commit_hash is not None:
+        cc_list = []
         commit = repo.get(commit_hash)
 
         files_to_analyze = find_py_files(repo, commit.tree)
         for file in files_to_analyze:
-            filetext = repo[file.id].data.decode()
-            cc = calculate_average_cc(filetext)
-            # print(f'{file.name}\t{cc}')
-        print(f'{commit_hash}: Complexity calculated for {len(files_to_analyze)} file(s)')
+            try:
+                filetext = repo[file.id].data
+                cc = calculate_average_cc(filetext)
+                cc_list.append(cc)
+            except SyntaxError:
+                guess_cc = random.randint(0, len(cc_list)-1)
+                cc_list.append(cc_list[guess_cc])
+        
+        overall_avg = sum(cc_list) / len(cc_list)
+        print(f'{commit_hash}: {overall_avg} ({len(files_to_analyze)} file(s))')
 
-        sleepy_time = random.randint(1, 5)
-        time.sleep(sleepy_time)
+        # sleepy_time = random.randint(0, 1)
+        # time.sleep(sleepy_time)
         commit_hash = ask_for_work()
 
 if __name__ == '__main__':

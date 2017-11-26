@@ -6,7 +6,7 @@ from project.models import Chunk
 
 REPO_DIR = './repo'
 REPO_PATH = REPO_DIR + '/.git'
-REPO_URL = 'https://github.com/google/tangent.git'
+REPO_URL = 'https://github.com/rubik/radon.git'
 
 commits_list = []
 next_task = 0
