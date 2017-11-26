@@ -49,21 +49,28 @@ def calculate_average_cc(filetext):
     except ZeroDivisionError:
         return 0.0
 
+def ask_for_work():
+    work = requests.get('http://127.0.0.1:5000/work')
+    if work.status_code == requests.codes.ok:
+        return work.json()["commit"]
+    else:
+        return None
+
 def main():
     repo = get_repo_obj()
 
-    work = requests.get('http://127.0.0.1:5000/work').json()
+    commit_hash = ask_for_work()
 
-    # commit_hash = '418ae74aa28d35cb395d98bb3377609f11428af4'
-    commit_hash = work["commit"]
-    commit = repo.get(commit_hash)
+    while commit_hash is not None:
+        commit = repo.get(commit_hash)
 
-    files_to_analyze = find_py_files(repo, commit.tree)
-    for file in files_to_analyze:
-        filetext = repo[file.id].data.decode()
-        cc = calculate_average_cc(filetext)
-        print(f'{file.name}\t{cc}')
-    print(f'{commit_hash}: Complexity calculated for {len(files_to_analyze)} file(s)')
+        files_to_analyze = find_py_files(repo, commit.tree)
+        for file in files_to_analyze:
+            filetext = repo[file.id].data.decode()
+            cc = calculate_average_cc(filetext)
+            # print(f'{file.name}\t{cc}')
+        print(f'{commit_hash}: Complexity calculated for {len(files_to_analyze)} file(s)')
+        commit_hash = ask_for_work()
 
 if __name__ == '__main__':
     main()
