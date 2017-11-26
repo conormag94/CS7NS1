@@ -59,6 +59,13 @@ def ask_for_work():
     else:
         return None
 
+def send_results(average_cc, commit_hash):
+    results = {
+        "commit": commit_hash,
+        "complexity": average_cc
+    }
+    r = requests.post('http://127.0.0.1:5000/work', json=results)
+
 def main():
     repo = get_repo_obj()
 
@@ -81,8 +88,11 @@ def main():
         overall_avg = sum(cc_list) / len(cc_list)
         print(f'{commit_hash}: {overall_avg} ({len(files_to_analyze)} file(s))')
 
-        # sleepy_time = random.randint(0, 1)
-        # time.sleep(sleepy_time)
+        send_results(overall_avg, commit_hash)
+        
+        sleepy_time = random.randint(0, 1)
+        time.sleep(sleepy_time)
+        
         commit_hash = ask_for_work()
 
 if __name__ == '__main__':
