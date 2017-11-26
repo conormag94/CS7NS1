@@ -4,7 +4,7 @@ from pygit2 import Repository, clone_repository, GitError
 from radon.complexity import cc_visit
 
 REPO_PATH = './repo'
-REPO_URL = 'https://github.com/conormag94/pyscores.git'
+REPO_URL = 'https://github.com/google/tangent.git'
 
 
 def get_repo_obj():
