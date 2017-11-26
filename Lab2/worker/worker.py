@@ -34,6 +34,21 @@ def find_py_files(repo, current_dir):
             py_files.append(entry)
     return py_files
 
+
+def calculate_average_cc(filetext):
+    complexities = []
+    complexity_objs = cc_visit(filetext)
+
+    for obj in complexity_objs:
+        complexities.append(obj.complexity)
+
+    total = sum(complexities)
+
+    try:
+        return total / len(complexities)
+    except ZeroDivisionError:
+        return 0.0
+
 def main():
     repo = get_repo_obj()
 
@@ -42,8 +57,11 @@ def main():
 
     files_to_analyze = find_py_files(repo, commit.tree)
     for file in files_to_analyze:
-        print(file)
-    
+        filetext = repo[file.id].data.decode()
+        cc = calculate_average_cc(filetext)
+        print(f'{file.name}\t{cc}')
+    print(f'Complexity calculated for {len(files_to_analyze)} file(s)')
+
 if __name__ == '__main__':
     main()
 
