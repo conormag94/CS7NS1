@@ -53,6 +53,9 @@ def get_work():
     global commits_list
     global next_task
 
-    commit_hash = str(commits_list[next_task])
-    next_task += 1
-    return jsonify({'commit': commit_hash}), 200
+    try:
+        commit_hash = str(commits_list[next_task])
+        next_task += 1
+        return jsonify({'commit': commit_hash}), 200
+    except IndexError:
+        return jsonify({"commit": None}), 404
