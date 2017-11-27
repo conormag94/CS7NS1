@@ -9,7 +9,7 @@ from radon.complexity import cc_visit
 REPO_DIR = './repo'
 REPO_PATH = REPO_DIR + '/.git'
 REPO_URL = 'https://github.com/rubik/radon.git'
-
+# REPO_URL = 'https://github.com/KupynOrest/DeblurGAN.git'
 
 def get_repo_obj():
     """
