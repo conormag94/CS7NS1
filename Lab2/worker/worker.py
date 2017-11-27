@@ -1,3 +1,4 @@
+import os
 import random
 import time
 
@@ -10,6 +11,7 @@ REPO_DIR = './repo'
 REPO_PATH = REPO_DIR + '/.git'
 REPO_URL = 'https://github.com/rubik/radon.git'
 # REPO_URL = 'https://github.com/KupynOrest/DeblurGAN.git'
+WORK_URL = os.getenv('WORK_URL')
 
 def get_repo_obj():
     """
@@ -53,7 +55,7 @@ def calculate_average_cc(filetext):
         return 0.0
 
 def ask_for_work():
-    work = requests.get('http://127.0.0.1:5000/work')
+    work = requests.get(WORK_URL)
     if work.status_code == requests.codes.ok:
         return work.json()["commit"]
     else:
@@ -64,7 +66,7 @@ def send_results(average_cc, commit_hash):
         "commit": commit_hash,
         "complexity": average_cc
     }
-    r = requests.post('http://127.0.0.1:5000/work', json=results)
+    r = requests.post(WORK_URL, json=results)
 
 def main():
     repo = get_repo_obj()

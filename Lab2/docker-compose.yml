@@ -1,0 +1,61 @@
+version: '2.1'
+
+services:
+    manager:
+        container_name: manager
+        build: ./manager
+        volumes:
+            - './manager:/usr/src/app'
+        ports:
+            - 5001:5000
+        healthcheck:
+            test: exit 0
+
+    worker-1:
+        container_name: worker-1
+        build: ./worker
+        volumes:
+            - './worker:/usr/src/app'
+        environment:
+          - WORK_URL=http://manager:5000/work
+        depends_on:
+          manager:
+            condition: service_healthy
+        links:
+          - manager
+    worker-2:
+        container_name: worker-2
+        build: ./worker
+        volumes:
+            - './worker:/usr/src/app'
+        environment:
+          - WORK_URL=http://manager:5000/work
+        depends_on:
+          manager:
+            condition: service_healthy
+        links:
+          - manager
+    worker-3:
+        container_name: worker-3
+        build: ./worker
+        volumes:
+            - './worker:/usr/src/app'
+        environment:
+          - WORK_URL=http://manager:5000/work
+        depends_on:
+          manager:
+            condition: service_healthy
+        links:
+          - manager
+    worker-4:
+        container_name: worker-4
+        build: ./worker
+        volumes:
+            - './worker:/usr/src/app'
+        environment:
+          - WORK_URL=http://manager:5000/work
+        depends_on:
+          manager:
+            condition: service_healthy
+        links:
+          - manager

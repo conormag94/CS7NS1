@@ -2,9 +2,9 @@ FROM python:3.6.1
 
 RUN apt-get update
 RUN apt-get -y install wget \
-	cmake \
-	gcc \
-	git
+    cmake \
+    gcc \
+    git
 
 RUN wget https://github.com/libgit2/libgit2/archive/v0.26.0.tar.gz && \
 tar xzf v0.26.0.tar.gz && \
@@ -28,5 +28,5 @@ RUN pip install -r requirements.txt
 # add app
 ADD . /usr/src/app
 
-# run server
-CMD python manage.py runserver -h 0.0.0.0
+# run worker
+CMD python worker.py

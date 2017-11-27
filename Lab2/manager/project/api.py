@@ -78,8 +78,8 @@ def get_work():
     except IndexError:
         return jsonify({"commit": None}), 404
     except ZeroDivisionError:
-        for i in range(len(commit_list)):
-            print(f'{i}: {commit_complexities[i]} <{commit_list[i]}>')
+        # for i in range(len(commit_list)):
+        #     print(f'{i}: {commit_complexities[i]} <{commit_list[i]}>')
         print("Graphing")
         finish()
         return jsonify({"commit": None}), 404
