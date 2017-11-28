@@ -29,7 +29,7 @@ def finish():
         graphed = True
         x_axis = list(range(len(commit_list)))
         y_axis = commit_complexities
-        plt.plot(x_axis, y_axis.reverse())
+        plt.plot(x_axis, y_axis)
         plt.xlabel('Commit Number')
         plt.ylabel('Mean Cyclomatic Complexity')
         plt.savefig('graph.png')    
