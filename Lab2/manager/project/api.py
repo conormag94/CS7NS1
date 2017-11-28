@@ -28,7 +28,7 @@ def finish():
     if not graphed:
         graphed = True
         x_axis = list(range(len(commit_list)))
-        y_axis = commit_complexities
+        y_axis = commit_complexities[::-1]
         plt.plot(x_axis, y_axis)
         plt.xlabel('Commit Number')
         plt.ylabel('Mean Cyclomatic Complexity')
