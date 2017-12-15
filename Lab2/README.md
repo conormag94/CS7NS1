@@ -10,6 +10,9 @@ The workers use the work stealing pattern to ask for work when they're ready. Th
 
 The manager gets all the commit hashes in the repository at the beginning of execution and adds them into a list of work to be done. Everytime a commit is completed it adds its complexity to a list of results and removes the commit from the work list. When all work is completed it plots a line graph of average complexity of each commit.
 
+![Commit complexities](graph.png)
+*Average Cyclomatic Complexity for each commit*
+
 ## Running with docker-compose
 
 The manager and worker components each have a Dockerfile for building them and installing dependencies. I have included a `docker-compose.yml` which will start up one manager and 4 worker nodes.
